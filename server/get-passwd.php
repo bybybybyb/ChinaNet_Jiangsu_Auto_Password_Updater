@@ -12,7 +12,19 @@ $passwdPath = 'passwd.txt';
 $logPath = 'log.html';
 
 if (startsWith($_SERVER['HTTP_USER_AGENT'], 'Wget')) {
-    getPasswd($passwdPath);
+	//record new log
+        if (file_exists($logPath) === true) {
+            $current = file_get_contents($logPath);
+            $current .= '<div>'.date("Y-m-d H:i:s").' wget </div>';
+            file_put_contents($logPath, $current);
+        } else {
+            $fl = fopen($logPath, 'w');
+            fwrite($fl, '<h1>Record of Password Changes</h1>');
+            fwrite($fl, '<div>'.date("Y-m-d H:i:s").' wget </div>');
+            fclose($fl);
+        }
+	getPasswd($passwdPath);
+
 } else {
     $passwd = filter_var($_GET['passwd'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/\d{6}/")));
 
